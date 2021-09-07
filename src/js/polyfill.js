@@ -1,20 +1,20 @@
-let matches = window.Element.prototype.matches
+let matches = (typeof window !== 'undefined') ? window.Element.prototype.matches : undefined
 let closest = (element, selector) => element.closest(selector)
-let WinEvent = (inType, params) => new window.Event(inType, params)
+let WinEvent = (inType, params) => (typeof window !== 'undefined') ? new window.Event(inType, params) : undefined
 let createCustomEvent = (eventName, params) => {
-  const cEvent = new window.CustomEvent(eventName, params)
+  const cEvent = (typeof window !== 'undefined') ? new window.CustomEvent(eventName, params) : undefined
 
   return cEvent
 }
 
 /* istanbul ignore next */
 function polyfill () {
-  if (!window.Element.prototype.matches) {
+  if (typeof window !== 'undefined' && !window.Element.prototype.matches) {
     matches = window.Element.prototype.msMatchesSelector ||
       window.Element.prototype.webkitMatchesSelector
   }
 
-  if (!window.Element.prototype.closest) {
+  if (typeof window !== 'undefined' && !window.Element.prototype.closest) {
     closest = (element, selector) => {
       if (!document.documentElement.contains(element)) {
         return null
@@ -32,7 +32,7 @@ function polyfill () {
     }
   }
 
-  if (!window.Event || typeof window.Event !== 'function') {
+  if (typeof window !== 'undefined' && (!window.Event || typeof window.Event !== 'function')) {
     WinEvent = (inType, params = {}) => {
       const e = document.createEvent('Event')
       e.initEvent(inType, Boolean(params.bubbles), Boolean(params.cancelable))
@@ -40,7 +40,7 @@ function polyfill () {
     }
   }
 
-  if (typeof window.CustomEvent !== 'function') {
+  if (typeof window !== 'undefined' && typeof window.CustomEvent !== 'function') {
     const originPreventDefault = window.Event.prototype.preventDefault
 
     createCustomEvent = (eventName, params) => {

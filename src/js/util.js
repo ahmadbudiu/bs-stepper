@@ -118,7 +118,7 @@ const getTransitionDurationFromElement = element => {
   }
 
   // Get transition-duration of the element
-  let transitionDuration = window.getComputedStyle(element).transitionDuration
+  let transitionDuration = typeof window !== 'undefined' ? window.getComputedStyle(element).transitionDuration : 0
   const floatTransitionDuration = parseFloat(transitionDuration)
 
   // Return 0 if element or transition duration is not found
@@ -142,13 +142,15 @@ const emulateTransitionEnd = (element, duration) => {
   }
 
   element.addEventListener(transitionEndEvent, listener)
-  window.setTimeout(() => {
-    if (!called) {
-      element.dispatchEvent(WinEvent(transitionEndEvent))
-    }
+  if (typeof window !== 'undefined') {
+    window.setTimeout(() => {
+      if (!called) {
+        element.dispatchEvent(WinEvent(transitionEndEvent))
+      }
 
-    element.removeEventListener(transitionEndEvent, listener)
-  }, emulatedDuration)
+      element.removeEventListener(transitionEndEvent, listener)
+    }, emulatedDuration)
+  }
 }
 
 const detectAnimation = (contentList, options) => {
